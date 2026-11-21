@@ -130,3 +130,12 @@ def decide(case_id: int, body: Decision):
     except ValueError as e:
         raise HTTPException(400, str(e))
     return {"case_id": case_id, "status": status}
+
+
+# Serve the built React viewer when it is present, so a single deployment hosts
+# both the UI and the API at one origin. The API routes above are registered
+# first, so they take precedence; everything else is served from the SPA build.
+_VIEWER_DIST = C.ROOT / "viewer" / "dist"
+if _VIEWER_DIST.is_dir():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=str(_VIEWER_DIST), html=True), name="viewer")

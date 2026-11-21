@@ -1,0 +1,12 @@
+# Render Blueprint - deploys the AIML-02 medical-imaging demo as one web service
+# (React viewer + FastAPI backend on a single URL). Free tier; the service sleeps
+# after ~15 min idle and cold-starts in 30-60s.
+services:
+  - type: web
+    name: nexvia-aiml02-medical-imaging
+    runtime: docker
+    rootDir: AIML-02
+    dockerfilePath: ./Dockerfile.render
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true

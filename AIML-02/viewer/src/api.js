@@ -1,4 +1,8 @@
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
+// In production the viewer is served by the FastAPI backend itself, so API
+// calls go to the same origin (BASE = ""). For local `npm run dev`, Vite proxies
+// the API paths to the backend on :8000 (see vite.config.js), so same-origin
+// paths work there too. Override with VITE_API_BASE if the API is elsewhere.
+const BASE = import.meta.env.VITE_API_BASE || "";
 
 export async function analyze(file) {
   const form = new FormData();
