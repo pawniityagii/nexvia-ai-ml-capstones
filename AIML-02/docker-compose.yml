@@ -1,0 +1,38 @@
+# Full stack: Orthanc DICOM server + FastAPI backend + Orthanc worker + viewer.
+# Train the classifier first (or run on the fallback) so ./artifacts is populated;
+# it is bind-mounted into the backend.
+services:
+  orthanc:
+    image: jodogne/orthanc-plugins:1.12.4
+    ports:
+      - "8042:8042"      # REST / web UI
+      - "4242:4242"      # DICOM
+    volumes:
+      - ./src/orthanc/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - orthanc-db:/var/lib/orthanc/db
+
+  backend:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      ORTHANC_URL: http://orthanc:8042
+    volumes:
+      - ./artifacts:/app/artifacts
+    depends_on: [orthanc]
+
+  worker:
+    build: .
+    command: python -m src.orthanc.pull_infer_store --interval 5
+    environment:
+      ORTHANC_URL: http://orthanc:8042
+    volumes:
+      - ./artifacts:/app/artifacts
+    depends_on: [orthanc, backend]
+
+  viewer:
+    build: ./viewer
+    ports: ["5173:80"]
+    depends_on: [backend]
+
+volumes:
+  orthanc-db:

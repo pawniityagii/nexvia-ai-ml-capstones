@@ -1,0 +1,29 @@
+# Submission archives
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node / Vite
+**/node_modules/
+**/dist/
+
+# Data + artifacts (regenerated; not committed)
+**/data/images/
+**/data/dicom/
+**/data/decathlon/
+**/data/*.csv
+**/data/*.parquet
+**/artifacts/*
+!**/artifacts/.gitkeep
+**/mlruns/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

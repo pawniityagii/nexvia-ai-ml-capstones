@@ -1,0 +1,19 @@
+# Serving + data + demo pipeline. These were installed and the backend,
+# DICOM round-trip and demo were run end-to-end against them during development.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+python-multipart>=0.0.9
+httpx>=0.27              # FastAPI TestClient
+
+pillow>=10.0
+numpy>=1.26
+scikit-image>=0.22
+pydicom>=2.4            # DICOM read/write
+requests>=2.31         # Orthanc REST client
+scikit-learn>=1.4      # evaluation metrics
+
+dvc>=3.0               # data versioning (step 2)
+
+# Deep-learning training (DenseNet classifier, Grad-CAM, MONAI 3D U-Net) needs
+# torch/torchvision/monai - large and platform-specific. See requirements-dl.txt.

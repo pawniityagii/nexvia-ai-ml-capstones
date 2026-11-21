@@ -1,0 +1,32 @@
+# Data + DICOM (downloaded / generated, not committed)
+data/images/
+data/dicom/
+data/decathlon/
+data/*.csv
+!data/.gitkeep
+
+# Model artifacts + overlays + case DB
+artifacts/*
+!artifacts/.gitkeep
+
+# MLflow
+mlruns/
+
+# DVC local cache
+/.dvc/cache
+/.dvc/tmp
+
+# Node / Vite
+viewer/node_modules/
+viewer/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

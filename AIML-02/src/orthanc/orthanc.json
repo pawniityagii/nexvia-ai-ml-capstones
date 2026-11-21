@@ -1,0 +1,14 @@
+{
+  "Name": "AIML02-Orthanc",
+  "StorageDirectory": "/var/lib/orthanc/db",
+  "IndexDirectory": "/var/lib/orthanc/db",
+  "HttpPort": 8042,
+  "DicomPort": 4242,
+  "DicomAet": "AIML02",
+  "RemoteAccessAllowed": true,
+  "AuthenticationEnabled": true,
+  "RegisteredUsers": {
+    "orthanc": "orthanc"
+  },
+  "DicomModalities": {}
+}

@@ -1,0 +1,27 @@
+# DVC pipeline (step 2: version your data). Reproduce with: dvc repro
+# Track the dataset + model so experiments are reproducible:
+#   dvc init
+#   dvc add data/images          # version the dataset
+#   dvc repro                     # run the stages below
+stages:
+  generate_data:
+    cmd: python scripts/generate_synthetic.py --n 400 --as-dicom 20
+    deps:
+      - scripts/generate_synthetic.py
+      - src/common/synthetic.py
+    outs:
+      - data/images
+      - data/labels.csv
+
+  train_classifier:
+    cmd: python -m src.training.train_classifier --epochs 10
+    deps:
+      - data/images
+      - data/labels.csv
+      - src/training/train_classifier.py
+      - src/models/classifier.py
+    outs:
+      - artifacts/densenet_chestxray.pt
+    metrics:
+      - artifacts/metrics.json:
+          cache: false

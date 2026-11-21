@@ -1,0 +1,8 @@
+# GNN dependencies - install on a machine/Colab with the right wheels.
+# CPU:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install torch_geometric
+# GPU (Colab already ships a CUDA torch):
+#   pip install torch_geometric
+torch>=2.2
+torch-geometric>=2.5

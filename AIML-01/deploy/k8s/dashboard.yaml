@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-dashboard
+  namespace: fraud
+  labels: {app: fraud-dashboard}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: fraud-dashboard}
+  template:
+    metadata:
+      labels: {app: fraud-dashboard}
+    spec:
+      containers:
+        - name: dashboard
+          image: fraud-dashboard:latest   # minikube image build -t fraud-dashboard:latest -f dashboard/Dockerfile .
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8501}]
+          resources:
+            requests: {cpu: "100m", memory: "256Mi"}
+            limits: {cpu: "500m", memory: "512Mi"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-dashboard
+  namespace: fraud
+spec:
+  selector: {app: fraud-dashboard}
+  ports:
+    - {port: 8501, targetPort: 8501}
+  type: NodePort
