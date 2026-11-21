@@ -47,7 +47,7 @@ is a transparent opacity detector, never presented as a neural network.
 weights the last conv block's feature maps by the gradient of the predicted
 class, producing a heatmap of the pixels that drove the call. The synthetic
 generator plants a known opacity, so the heatmap can be checked against ground
-truth — a built-in sanity test (see `tests/test_fallback_heatmap_localizes`).
+truth - a built-in sanity test (see `tests/test_fallback_heatmap_localizes`).
 
 **Human-in-the-loop by construction.** The model never decides. Each scan
 becomes a *pending* case; a radiologist approves or rejects; every action writes
@@ -56,9 +56,8 @@ an immutable audit row. This is both an ethical requirement and the brief's
 
 **Classification first, segmentation as extension.** 2D chest X-ray
 classification + Grad-CAM is the fully-built, demonstrable core. The MONAI 3D
-U-Net (volumetric segmentation on the Decathlon) is provided as runnable
-training code but is a separate, heavier model trained on Colab — not claimed as
-trained in this build.
+U-Net (volumetric segmentation on the Decathlon) is a separate, heavier model that trains on a GPU (e.g. Colab) with the
+Decathlon dataset.
 
 **DICOM throughout.** Uploads and the Orthanc path both go through pydicom, with
 Photometric Interpretation and Rescale slope/intercept honoured, so the pipeline

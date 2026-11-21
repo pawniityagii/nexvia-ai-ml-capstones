@@ -7,8 +7,8 @@ neighbourhood, so a transaction sitting inside a dense shared-infra cluster
 ordinary. Output: a per-transaction GNN fraud score, saved for blending with
 XGBoost (see blend.py).
 
-Trained on Colab/GPU in practice (same workflow as the PPE model); runs on CPU
-for small graphs. Requires: torch, torch_geometric.
+Trained on a GPU (e.g. Colab); runs on CPU for small graphs.
+Requires: torch, torch_geometric.
 
 Run:
     python -m src.models.train_gnn --epochs 60

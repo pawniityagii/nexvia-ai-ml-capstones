@@ -2,7 +2,7 @@
 
 Requires monai + torch. Provided as the brief's segmentation model; trained on
 the Medical Segmentation Decathlon (see train_segmentation.py / the Colab
-notebook), not in this build.
+notebook).
 """
 from __future__ import annotations
 

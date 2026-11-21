@@ -2,8 +2,7 @@
 
 Requires monai + torch (Colab/GPU). Downloads a Decathlon task (default Task09
 Spleen - small, single-organ) on first run, trains the U-Net with Dice loss, and
-reports the Dice metric. This is the brief's segmentation deliverable; it is
-provided as runnable code, trained on Colab rather than in the build sandbox.
+reports the Dice metric. It trains on a GPU (e.g. Colab) with the Decathlon dataset.
 
 Run:
     python -m src.training.train_segmentation --task Task09_Spleen --epochs 30

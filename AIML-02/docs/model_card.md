@@ -1,6 +1,6 @@
-# Model Card — AI-Assisted Medical Imaging
+# Model Card - AI-Assisted Medical Imaging
 
-## ⚠️ FOR EDUCATION ONLY — NOT FOR CLINICAL USE
+## ⚠️ FOR EDUCATION ONLY - NOT FOR CLINICAL USE
 This system does not provide a medical diagnosis. Outputs are model estimates
 that must be reviewed by a qualified radiologist. It must not be used on real
 patients or to inform real clinical decisions.
@@ -30,7 +30,7 @@ patients or to inform real clinical decisions.
 
 ## Evaluation
 - Classification reports **ROC-AUC, sensitivity and specificity** (not just
-  accuracy) — sensitivity matters most for screening, where a missed finding is
+  accuracy) - sensitivity matters most for screening, where a missed finding is
   the costly error. Segmentation reports the **Dice** coefficient.
 
 ## Limitations

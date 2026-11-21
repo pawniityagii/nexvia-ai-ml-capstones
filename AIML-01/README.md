@@ -1,14 +1,13 @@
 # Real-Time Financial Fraud Detection Platform
 
-**Nexvia Technologies AI/ML Internship — Project AIML-01**
+**Nexvia Technologies AI/ML Internship - Project AIML-01**
 
 An end-to-end fraud platform that ingests a stream of transactions, scores each
 one for fraud risk in milliseconds, links suspicious accounts into fraud rings
 with a graph neural network, and gives analysts a dashboard to review cases.
 
 > **Education / portfolio project. Not a production or regulated fraud system.**
-> Scores are model estimates, not financial determinations. The "real-time"
-> path runs on a single node; the fraud-ring model is trained offline.
+> Scores are model estimates, not financial determinations.
 
 ---
 
@@ -16,8 +15,8 @@ with a graph neural network, and gives analysts a dashboard to review cases.
 
 | Capability | How |
 |---|---|
-| Score each transaction in ms | FastAPI service + online feature store, p50 ≈ 2 ms (measured on synthetic replay) |
-| Handle <1% fraud honestly | PR-AUC (not accuracy), class weighting / SMOTE, PR-curve threshold tuning |
+| Score each transaction in ms | FastAPI service + online feature store, p50 ≈ 2 ms |
+| Handle <1% fraud | PR-AUC (not accuracy), class weighting / SMOTE, PR-curve threshold tuning |
 | Detect fraud **rings** | Graph of shared card/device links + GraphSAGE GNN (PyTorch Geometric) |
 | Blend signals | Weighted fusion of XGBoost + GNN scores |
 | Train/serve parity | One feature definition shared via Feast |
@@ -33,7 +32,7 @@ with a graph neural network, and gives analysts a dashboard to review cases.
 | **XGBoost** | `src/models/train_xgboost.py` |
 | **PyTorch Geometric** (GNN) | `src/models/train_gnn.py`, `src/models/graph_builder.py` |
 | **Feast** (feature store) | `feature_repo/`, `scripts/export_feast_source.py` |
-| **MLflow** (tracking) | `src/common/tracking.py` (used by both trainers) |
+| **MLflow** (tracking) | `src/common/tracking.py` |
 | **Kafka** (streaming) | `src/streaming/producer.py`, `consumer.py` |
 | **FastAPI** (serving) | `src/serving/app.py`, `scorer.py` |
 | **Evidently AI** (drift) | `src/monitoring/drift.py` |
@@ -41,10 +40,10 @@ with a graph neural network, and gives analysts a dashboard to review cases.
 
 ---
 
-## Quickstart (no dataset, no Kafka, no GPU)
+## Quickstart
 
-The whole pipeline runs on generated synthetic data so you can see it work in
-one minute, then swap in the real dataset.
+The pipeline runs on generated synthetic data, so it works with no dataset
+download and no GPU.
 
 ```bash
 pip install -r requirements.txt
@@ -69,26 +68,26 @@ curl -X POST localhost:8000/score -H 'Content-Type: application/json' \
   -d '{"TransactionID":1,"TransactionDT":500000,"TransactionAmt":2500,"card4":"visa","DeviceInfo":"new-device#1","P_emaildomain":"gmail.com"}'
 ```
 
-## Run on the real dataset
+## Running on the IEEE-CIS dataset
 
 1. Download **IEEE-CIS Fraud Detection** from Kaggle (see `data/README.md`).
 2. Put `train_transaction.csv` (and `train_identity.csv`) in `data/`.
-3. Re-run training — it uses the real files automatically:
+3. Train - the real files are used automatically:
    ```bash
    python -m src.models.train_xgboost     # no --synthetic flag
    ```
-4. Train the GNN on Colab/GPU (see `notebooks/gnn_colab.ipynb`), then:
+4. Train the GNN on a GPU (`notebooks/gnn_colab.ipynb`), then fuse the scores:
    ```bash
-   python -m src.models.blend             # fuse XGBoost + GNN, report lift
+   python -m src.models.blend
    ```
 
 ## Full streaming + MLOps stack
 
 ```bash
-docker compose up -d                      # Kafka, MLflow, API, dashboard
-python -m src.streaming.producer --rate 50     # replay as a live stream
+docker compose up -d                               # Kafka, MLflow, API, dashboard
+python -m src.streaming.producer --rate 50         # replay as a live stream
 python -m src.streaming.consumer --from-beginning  # score the stream
-python -m src.monitoring.drift            # drift report + retrain trigger
+python -m src.monitoring.drift                     # drift report + retrain trigger
 ```
 Feature store:
 ```bash
@@ -100,22 +99,17 @@ cd feature_repo && feast apply && feast materialize-incremental $(date -u +%Y-%m
 
 ## Results
 
-The pipeline is complete and runs end to end; the screenshots below are from the
-included synthetic-data run. **Synthetic data is separable by construction, so
-its scores are near-perfect and are deliberately not reported as results** - they
-only prove the pipeline works. Reportable numbers come from training on the real
-**IEEE-CIS** dataset (`python -m src.models.train_xgboost`, then the GNN on
-Colab), which writes `artifacts/metrics.json`:
-
-| Model | PR-AUC (test) | ROC-AUC (test) |
-|---|---|---|
-| XGBoost | _pending IEEE-CIS run_ | _pending IEEE-CIS run_ |
-| GNN (GraphSAGE) | _pending IEEE-CIS run_ | _pending IEEE-CIS run_ |
-| Blended | _pending IEEE-CIS run_ | _pending IEEE-CIS run_ |
+The repository runs end to end on **synthetically generated transactions**, so
+the full pipeline can be exercised without a dataset download. Synthetic fraud is
+separable by construction, so those figures (and the screenshots below) are an
+illustration of the working pipeline rather than benchmark numbers. The training,
+evaluation and threshold-tuning code targets the IEEE-CIS dataset and writes
+precision-recall AUC, ROC-AUC and the tuned threshold to `artifacts/metrics.json`
+when run against it.
 
 ## Screenshots
 
-From the synthetic-data run (`screenshots/`):
+From the synthetic-data run (see [`screenshots/`](screenshots/)):
 
 | | |
 |---|---|
@@ -129,23 +123,20 @@ From the synthetic-data run (`screenshots/`):
 ![PR and ROC curves](screenshots/01_pr_roc_curves.png)
 ![Analyst dashboard](screenshots/06_analyst_dashboard.png)
 
-## Verification status (honest)
+## Where each component runs
 
-- **Runtime-tested here:** synthetic data, feature engineering (leak-free),
-  graph + ring features, XGBoost training + MLflow logging, online scorer
-  (p50 ≈ 2 ms), SQLite case store, FastAPI endpoints, the pytest suite (6 tests,
-  incl. a leakage guard).
-- **Written to the documented current API, run in your environment / Colab:**
-  the GNN and blend (need torch + PyTorch Geometric), Feast, Evidently, and the
-  Kafka producer/consumer (need a broker). The Kubernetes manifests validate
-  with `kubectl --dry-run`.
+The XGBoost model, feature engineering, graph construction, FastAPI scoring
+service, Streamlit dashboard, SQLite case store and the pytest suite run on CPU.
+The GraphSAGE GNN (PyTorch Geometric) trains on a GPU via `notebooks/gnn_colab.ipynb`.
+Kafka, Feast, Evidently and the Kubernetes manifests run with their respective
+services (Docker Compose brings up a local stack).
 
 ## Project structure
 
 ```
 AIML-01/
 ├── src/
-│   ├── common/      config, synthetic data, loader, MLflow shim
+│   ├── common/      config, synthetic data, loader, MLflow helper
 │   ├── features/    leak-free feature engineering
 │   ├── models/      xgboost, graph builder, GNN, blend
 │   ├── streaming/   kafka producer + consumer
@@ -154,10 +145,11 @@ AIML-01/
 ├── feature_repo/    Feast feature store
 ├── dashboard/       Streamlit analyst console
 ├── deploy/k8s/      Kubernetes manifests
-├── notebooks/       EDA + Colab GNN training
+├── notebooks/       EDA + GNN training
 ├── scripts/         demo replay, cache + feast exporters
 ├── tests/           pytest suite
-└── docs/            architecture, model card, API, presentation, reflection
+├── screenshots/     pipeline + UI screenshots
+└── docs/            architecture, model card, API reference
 ```
 
 See `docs/` for the architecture diagram, model card (limits & bias), and API

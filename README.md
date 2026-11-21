@@ -1,6 +1,6 @@
-# Nexvia AI/ML Internship — Capstone Projects
+# Nexvia AI/ML Internship - Capstone Projects
 
-**Pawni Tyagi · AI / Machine Learning Intern, Nexvia Technologies (Remote) · Oct–Nov 2026**
+**Pawni Tyagi · AI / Machine Learning Intern, Nexvia Technologies (Remote) · Oct-Nov 2026**
 Reference NEX-INT-2026-0536
 
 This repository holds both allotted capstone projects for the Nexvia AI/ML
@@ -18,7 +18,7 @@ reference), a `tests/` suite, and a `screenshots/` folder.
 
 ---
 
-## AIML-01 — Real-Time Fraud Detection
+## AIML-01 - Real-Time Fraud Detection
 
 Ingests a stream of transactions, scores each for fraud risk in milliseconds,
 links suspicious accounts into fraud rings with a graph neural network, and gives
@@ -36,9 +36,9 @@ python scripts/replay_demo.py --limit 5000
 streamlit run dashboard/app.py
 ```
 
-## AIML-02 — AI-Assisted Medical Imaging
+## AIML-02 - AI-Assisted Medical Imaging
 
-> **FOR EDUCATION ONLY — NOT FOR CLINICAL USE.** Outputs are model estimates that
+> **FOR EDUCATION ONLY - NOT FOR CLINICAL USE.** Outputs are model estimates that
 > must be reviewed by a qualified radiologist; this system does not provide a
 > medical diagnosis.
 
@@ -64,7 +64,7 @@ cd viewer && npm install && npm run dev       # in another
 
 Both projects are complete and run end to end. The committed demos run on
 **synthetic data** so a reviewer can see everything working with no dataset
-download and no GPU — the `screenshots/` in each folder are from those runs.
+download and no GPU - the `screenshots/` in each folder are from those runs.
 Synthetic data is separable by construction, so its metrics are deliberately
 **not** reported as results. The deep-learning models (the PyTorch Geometric GNN
 in AIML-01; DenseNet121, Grad-CAM and the MONAI 3D U-Net in AIML-02) are written

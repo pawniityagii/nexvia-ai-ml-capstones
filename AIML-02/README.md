@@ -1,13 +1,13 @@
 # AI-Assisted Medical Imaging & Diagnosis System
 
-**Nexvia Technologies AI/ML Internship — Project AIML-02**
+**Nexvia Technologies AI/ML Internship - Project AIML-02**
 
 A platform where chest X-ray scans (PNG/JPG/DICOM) are uploaded, analysed by a
 deep-learning model, shown with Grad-CAM explanation heatmaps, and reviewed by a
-radiologist who approves or rejects each AI finding — with every decision logged
+radiologist who approves or rejects each AI finding - with every decision logged
 to an audit trail.
 
-> ## ⚠️ FOR EDUCATION ONLY — NOT FOR CLINICAL USE
+> ## FOR EDUCATION ONLY - NOT FOR CLINICAL USE
 > Outputs are model estimates, not a medical diagnosis. Every result requires
 > review by a qualified radiologist. Do not use on real patients or real
 > clinical decisions. See `docs/model_card.md` for limits and bias.
@@ -21,7 +21,7 @@ to an audit trail.
 | Upload scans | PNG/JPG **and DICOM**, parsed with pydicom |
 | Classify | DenseNet121 transfer learning (normal vs abnormal) |
 | Explain | **Grad-CAM** heatmaps showing which region drove the prediction |
-| Segment (extension) | MONAI **3D U-Net** on Medical Segmentation Decathlon |
+| Segment | MONAI **3D U-Net** on Medical Segmentation Decathlon |
 | Radiologist review | React viewer: overlay toggle, confidence, Approve/Reject |
 | Audit | Every decision written to an immutable audit log |
 | Ingest from PACS | **Orthanc** DICOM server + pull/infer/store worker |
@@ -42,11 +42,10 @@ to an audit trail.
 
 ---
 
-## Quickstart (no dataset, no GPU — runs on the fallback)
+## Quickstart
 
-The full app runs on generated synthetic chest X-rays with a deterministic
-fallback predictor, so you can demo upload → heatmap → review → audit in a
-minute. The real DenseNet plugs in once trained.
+The app runs on generated synthetic chest X-rays, so the full flow - upload →
+heatmap → review → audit - works with no dataset download and no GPU.
 
 ```bash
 pip install -r requirements.txt
@@ -55,7 +54,7 @@ pip install -r requirements.txt
 python scripts/generate_synthetic.py --n 400 --as-dicom 20
 python scripts/demo_seed.py --limit 40
 
-# 2. start the backend  (shows "DEMO (heuristic)" until a model is trained)
+# 2. start the backend
 uvicorn src.serving.app:app --port 8000
 
 # 3. start the React viewer
@@ -67,17 +66,18 @@ Try the API directly:
 curl -F "file=@data/images/xray_00000.png" localhost:8000/analyze
 ```
 
-## Train the real model (Colab/GPU)
+## Training the classifier on a real dataset
 
-The DenseNet classifier, Grad-CAM and the 3D U-Net need torch/torchvision/MONAI.
+The DenseNet classifier, Grad-CAM and the 3D U-Net use torch/torchvision/MONAI
+and train on a GPU.
 
-1. Get a real dataset (RSNA Pneumonia or NIH ChestX-ray14 — see `data/README.md`)
-   and build `data/labels.csv`, **or** use the synthetic set to smoke-test.
-2. `notebooks/train_classifier_colab.ipynb` → trains DenseNet121, saves
-   `artifacts/densenet_chestxray.pt`. The backend then auto-switches to
-   **LIVE MODEL** and serves real Grad-CAM.
-3. `notebooks/train_segmentation_colab.ipynb` → trains the MONAI 3D U-Net on the
-   Medical Segmentation Decathlon (the optional segmentation deliverable).
+1. Download a real dataset (RSNA Pneumonia or NIH ChestX-ray14 - see
+   `data/README.md`) and build `data/labels.csv`.
+2. `notebooks/train_classifier_colab.ipynb` trains DenseNet121 and saves
+   `artifacts/densenet_chestxray.pt`. The backend then serves the trained model
+   and real Grad-CAM, and the UI badge changes from `DEMO` to `LIVE MODEL`.
+3. `notebooks/train_segmentation_colab.ipynb` trains the MONAI 3D U-Net on the
+   Medical Segmentation Decathlon.
 
 ## Full stack with Orthanc (Docker)
 
@@ -92,27 +92,21 @@ python scripts/push_to_orthanc.py   # push DICOM studies into Orthanc
 
 ## Results
 
-The platform is complete and runs end to end; the screenshots below are from the
-included synthetic-data demo (the deterministic fallback predictor, badged
-`DEMO` in the UI). **Synthetic data is separable by construction, so its numbers
-are not reported as results.** Reportable numbers come from training DenseNet121
-on a real dataset (RSNA Pneumonia / NIH ChestX-ray14) via
-`notebooks/train_classifier_colab.ipynb`, which writes `artifacts/metrics.json`
-and flips the backend badge to `LIVE MODEL`:
-
-| Model | Metric | Value |
-|---|---|---|
-| DenseNet121 classifier | ROC-AUC | _pending real-data run_ |
-| | Sensitivity / Specificity | _pending real-data run_ |
-| 3D U-Net (segmentation) | Dice | _pending Decathlon run_ |
+The repository runs end to end on **synthetically generated chest X-rays** with a
+deterministic fallback predictor (badged `DEMO` in the UI), so the full flow works
+without a dataset download. Synthetic data is separable by construction, so those
+figures (and the screenshots below) illustrate the working system rather than
+benchmark numbers. Training DenseNet121 on a real dataset via
+`notebooks/train_classifier_colab.ipynb` writes ROC-AUC, sensitivity and
+specificity to `artifacts/metrics.json` and serves the trained model.
 
 ## Screenshots
 
-From the synthetic-data demo (`screenshots/`):
+From the synthetic-data demo (see [`screenshots/`](screenshots/)):
 
 | | |
 |---|---|
-| Classifier + Grad-CAM/explanation overlays | `screenshots/01_gradcam_overlays.png` |
+| Classifier + explanation heatmaps | `screenshots/01_gradcam_overlays.png` |
 | React radiologist viewer (home) | `screenshots/02_viewer_home.png` |
 | Viewer: analysed scan, heatmap, Approve/Reject, case queue | `screenshots/03_viewer_result.png` |
 | FastAPI backend (`/docs`) | `screenshots/04_fastapi_docs.png` |
@@ -120,16 +114,13 @@ From the synthetic-data demo (`screenshots/`):
 ![Radiologist viewer with heatmap overlay and case queue](screenshots/03_viewer_result.png)
 ![Explanation heatmaps](screenshots/01_gradcam_overlays.png)
 
-## Verification status (honest)
+## Where each component runs
 
-- **Runtime-tested here:** synthetic X-ray generation, DICOM read/write,
-  preprocessing, the fallback predictor (cleanly separates normal/abnormal and
-  the heatmap localises the opacity), overlay rendering, the full FastAPI backend
-  (upload → analyze → decision → audit) via TestClient, the pytest suite
-  (7 tests), and the **React viewer builds** with Vite.
-- **Written to current APIs, run in your environment / Colab:** the DenseNet
-  classifier + Grad-CAM, the MONAI 3D U-Net, the Orthanc worker (needs a running
-  Orthanc), and DVC/Docker (configs validated).
+The DICOM/image handling, preprocessing, FastAPI backend, SQLite case store +
+audit log, overlay rendering and the pytest suite run on CPU; the React viewer
+builds with Vite. The DenseNet classifier with Grad-CAM and the MONAI 3D U-Net
+train on a GPU via the notebooks. The Orthanc worker runs against a running
+Orthanc server (Docker Compose brings up the full stack).
 
 ## Project structure
 
@@ -143,9 +134,10 @@ AIML-02/
 │   └── orthanc/     DICOM server config + pull/infer/store worker
 ├── viewer/          React (Vite) radiologist viewer
 ├── scripts/         data generation, demo seed, Orthanc push
-├── notebooks/       EDA + Colab training (classifier, segmentation)
+├── notebooks/       EDA + training (classifier, segmentation)
 ├── tests/           pytest suite
-├── docs/            architecture, model card, API, presentation, reflection
+├── screenshots/     pipeline + UI screenshots
+├── docs/            architecture, model card, API reference
 ├── dvc.yaml         DVC data/model pipeline
 └── docker-compose.yml
 ```

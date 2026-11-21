@@ -2,16 +2,16 @@
 
 Datasets are **not committed** (see `.gitignore`). Two options:
 
-## Option A — Synthetic (default, zero download)
+## Option A - Synthetic (default, zero download)
 Nothing to do. If no real CSV is present, the pipeline generates
 `synthetic_transactions.csv` automatically. Regenerate explicitly with:
 ```bash
 python -m src.common.synthetic --n 60000 --cards 6000 --rings 40
 ```
-Synthetic data is separable by construction — use it to prove the pipeline
+Synthetic data is separable by construction - use it to prove the pipeline
 runs, not to report accuracy.
 
-## Option B — IEEE-CIS Fraud Detection (real evaluation)
+## Option B - IEEE-CIS Fraud Detection (real evaluation)
 Primary dataset for this project (chosen because it has real device, card, and
 address fields, so the fraud-ring graph in step 4 is honest).
 
@@ -19,8 +19,8 @@ address fields, so the fraud-ring graph in step 4 is honest).
    <https://www.kaggle.com/competitions/ieee-fraud-detection/data>
    (Accept the competition rules; download requires a Kaggle account.)
 2. Place these files here in `data/`:
-   - `train_transaction.csv`
-   - `train_identity.csv`  (optional but recommended — adds device/OS/browser)
+  - `train_transaction.csv`
+  - `train_identity.csv`  (optional but recommended - adds device/OS/browser)
 3. The loader merges them on `TransactionID` automatically.
 
 Via the Kaggle CLI:

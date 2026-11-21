@@ -44,7 +44,7 @@ flowchart TD
 
 **Fraud-ring graph.** Transactions are nodes; edges connect transactions that
 share a *specific* card (`card_uid`) or *specific* device fingerprint
-(`device_uid`). Email *domain* is deliberately not an edge key — it is
+(`device_uid`). Email *domain* is deliberately not an edge key - it is
 low-cardinality and would merge unrelated people into one giant component.
 Within each identity group, transactions are chained in time order to keep the
 graph O(n) instead of O(n²) while preserving connected components exactly.
@@ -63,7 +63,7 @@ no-history defaults.
 **Online vs batch features.** Batch training computes history over the full
 dataset. At serving time the same features come from rolling per-card state
 (an in-memory store here; Feast online store backed by Redis in production).
-Graph features are precomputed per card and looked up by the scorer — real-time
+Graph features are precomputed per card and looked up by the scorer - real-time
 GNN inference on a live graph is a known hard problem, so ring scoring is batch
 and the online model consumes cached ring features.
 

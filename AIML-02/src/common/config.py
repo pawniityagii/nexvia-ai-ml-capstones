@@ -1,8 +1,8 @@
 """Central configuration: paths, image spec, class labels.
 
 Chest X-ray binary classification (normal vs abnormal) is the primary task.
-The segmentation task (MONAI 3D U-Net) has its own config block; it is provided
-as runnable training code, not trained in this build.
+The segmentation task (MONAI 3D U-Net) has its own config block and trains on a
+GPU via the training notebook.
 """
 from __future__ import annotations
 

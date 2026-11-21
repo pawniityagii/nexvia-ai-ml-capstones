@@ -1,4 +1,4 @@
-# Model Card — Fraud Detection Platform
+# Model Card - Fraud Detection Platform
 
 **For education only. Not a production or regulated fraud-decisioning system.**
 A score here is a model estimate of risk, not a determination that a person or
@@ -31,7 +31,7 @@ transaction is fraudulent.
 ## Limitations
 - Trained on historical, possibly non-representative data; fraud patterns drift.
 - Frequency-encoded categoricals lose information vs the raw identity.
-- The online feature state is in-memory in this build (not persisted/HA).
+- The online feature state is in-memory (not persisted/HA).
 - Real-time GNN inference is approximated by cached ring features, not a live
   graph update per transaction.
 
